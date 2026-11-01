@@ -5,54 +5,71 @@
 <style>
 /* Layout: one centred column. Header, a 4x3 grid of photo cards, a list of wishes that fills as pairs match, a win panel, a floating music button. */
 :root {
-  --bg: #f6f2fb;
-  --fg: #1f1840;
-  --muted: #5d567e;
-  --surface: #ffffff;
-  --back: #2b2166;
-  --accent: #f0a500;
-  --accent-ink: #2a1d00;
-  --line: #d9d0ec;
-  --font-display: "Tiro Bangla", "Hind Siliguri", serif;
-  --font-body: "Hind Siliguri", system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #150f33;
-    --fg: #f1ecff;
-    --muted: #b4abd6;
-    --surface: #1f1747;
-    --back: #3a2d86;
-    --accent: #f6c445;
-    --accent-ink: #2a1d00;
-    --line: #362c6b;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #150f33;
-  --fg: #f1ecff;
-  --muted: #b4abd6;
-  --surface: #1f1747;
-  --back: #3a2d86;
+  --bg: #2b1659;
+  --bg-grad: linear-gradient(180deg, #3b1d7a 0%, #2b1659 55%, #20103f 100%);
+  --dots-o: 0.5;
+  --fg: #f6f0ff;
+  --muted: #cdbff0;
+  --surface: #3d2a85;
+  --back: #4b36ad;
   --accent: #f6c445;
   --accent-ink: #2a1d00;
-  --line: #362c6b;
+  --line: #6350c0;
   color-scheme: dark;
+  --font-display: "Tiro Bangla", "Hind Siliguri", serif;
+  --font-body: "Hind Siliguri", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
 body {
-  background: var(--bg);
+  position: relative;
+  background-color: var(--bg);
+  background-image: var(--bg-grad);
+  background-attachment: fixed;
   color: var(--fg);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
-  padding-block: 24px 88px;
+  padding-block: 76px 88px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-main { max-width: 460px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+main { position: relative; z-index: 1; max-width: 460px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+/* Party backdrop: confetti dots and balloons sit fixed behind the content; the flag garland hangs from the top of the page. */
+.party { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.dots {
+  position: absolute; inset: 0; opacity: var(--dots-o);
+  background-image:
+    radial-gradient(circle, #ff4d9d 0 3px, transparent 4px),
+    radial-gradient(circle, #ffc83d 0 3px, transparent 4px),
+    radial-gradient(circle, #2ec4b6 0 2.5px, transparent 3.5px),
+    radial-gradient(circle, #7a5cff 0 3px, transparent 4px),
+    radial-gradient(circle, #ff7a45 0 2px, transparent 3px);
+  background-size: 92px 92px, 134px 134px, 110px 110px, 158px 158px, 76px 76px;
+  background-position: 10px 24px, 64px 72px, 30px 96px, 102px 40px, 48px 8px;
+}
+.balloon {
+  position: absolute; width: 44px; height: 56px;
+  border-radius: 50% 50% 48% 48% / 56% 56% 44% 44%;
+  background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.7) 0 7%, transparent 8%), var(--c);
+  animation: bob 5s ease-in-out infinite;
+}
+.balloon::before {
+  content: ""; position: absolute; left: 50%; top: calc(100% + 6px); width: 1.5px; height: 96px;
+  background: var(--muted); opacity: 0.5; transform: translateX(-50%);
+}
+.balloon::after {
+  content: ""; position: absolute; left: 50%; top: calc(100% - 1px); transform: translateX(-50%);
+  border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid var(--c);
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-16px) rotate(3deg); }
+}
+.bunting { position: absolute; top: 0; left: 0; width: 100%; height: 56px; pointer-events: none; z-index: 0; display: block; }
+.bunting .rope { stroke: var(--muted); stroke-width: 2; }
+@media (prefers-reduced-motion: reduce) { .balloon { animation: none; } }
 header { display: flex; flex-direction: column; gap: 6px; }
 .eyebrow { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--muted); }
 h1 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 2.2rem; line-height: 1.25; text-wrap: balance; }
@@ -157,6 +174,29 @@ h2 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 1
 #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
 @media (prefers-reduced-motion: reduce) { .inner { transition: none; } }
 </style>
+
+<div class="party" aria-hidden="true">
+  <div class="dots"></div>
+  <span class="balloon" style="left: -26px; top: 16%; --c: #ff4d9d; animation-delay: 0s"></span>
+  <span class="balloon" style="right: -26px; top: 26%; --c: #ffc83d; animation-delay: 1.2s"></span>
+  <span class="balloon" style="left: -26px; top: 46%; --c: #2ec4b6; animation-delay: 2.1s"></span>
+  <span class="balloon" style="right: -26px; top: 58%; --c: #7a5cff; animation-delay: 0.7s"></span>
+  <span class="balloon" style="left: -26px; top: 70%; --c: #ff7a45; animation-delay: 3s"></span>
+  <span class="balloon" style="right: -26px; top: 78%; --c: #ff4d9d; animation-delay: 1.8s"></span>
+</div>
+<svg class="bunting" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="flags" width="240" height="56" patternUnits="userSpaceOnUse">
+      <polygon points="4,5 44,5 24,46" fill="#ff4d9d"/>
+      <polygon points="52,5 92,5 72,46" fill="#ffc83d"/>
+      <polygon points="100,5 140,5 120,46" fill="#2ec4b6"/>
+      <polygon points="148,5 188,5 168,46" fill="#7a5cff"/>
+      <polygon points="196,5 236,5 216,46" fill="#ff7a45"/>
+    </pattern>
+  </defs>
+  <rect width="100%" height="56" fill="url(#flags)"/>
+  <line class="rope" x1="0" y1="5" x2="100%" y2="5"/>
+</svg>
 
 <main>
   <header>
